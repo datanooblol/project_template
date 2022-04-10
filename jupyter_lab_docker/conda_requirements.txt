@@ -1,0 +1,19 @@
+#utils
+pip
+pytest
+
+#manipulation
+pandas
+numpy
+
+#statistical testing and modeling
+scipy
+statsmodels
+
+# modeling
+scikit-learn
+
+# visualization
+matplotlib
+seaborn
+plotly
