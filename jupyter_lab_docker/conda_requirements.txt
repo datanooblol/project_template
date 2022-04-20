@@ -1,6 +1,7 @@
 #utils
 pip
 pytest
+psutil
 
 #manipulation
 pandas

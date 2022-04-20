@@ -2,16 +2,24 @@ import logging
 from udf.utils.configs import *
 import pandas as pd
 from functools import wraps
+import os
 
 class LogETL:
     def __init__(self, original_func):
         self.original_func = original_func
         self.log_type = "debug"
-        self.conf_log = get_config()["log"]
+        # self.conf_log = get_config()["log"]
+        self.DIR = get_config()["current_env"]["logs"]
         self.FORMAT = "[%(asctime)s]|%(message)s"
         self.logger = self.get_logger()
+        # print(self.DIR)
+        # if not os.path.exists(self.DIR):
+        #     os.makedirs(self.DIR)
     
     def get_logger(self):
+        if not os.path.exists(self.DIR):
+            os.makedirs(self.DIR)
+            
         logger = logging.getLogger(self.original_func.__name__)
         
         log_var = {"debug":logging.DEBUG,
@@ -20,7 +28,8 @@ class LogETL:
 
         formatter = logging.Formatter(self.FORMAT)
 
-        file_handler = logging.FileHandler(self.conf_log[self.log_type], mode="a")
+        # file_handler = logging.FileHandler(self.conf_log[self.log_type], mode="a")
+        file_handler = logging.FileHandler(f"{self.DIR}/{self.log_type}.log", mode="a")
         file_handler.setFormatter(formatter)
 
         stream_handler = logging.StreamHandler()
@@ -43,8 +52,9 @@ class LogETL:
         # module = "trasform"
         func_name = self.original_func.__name__
         line_no = self.original_func.__code__.co_firstlineno
+        env_tag = get_config()["current_env"]['env_tag']
         # msg_fmt = f"{source}|{module}|{func_name}|{line_no}|{step}|{data}|{shape}"
-        msg_fmt = f"{elapsed:.6f}|{module}|{func_name}|{line_no}|{step}|{shape}"
+        msg_fmt = f"{elapsed:.6f}|{env_tag}|{module}|{func_name}|{line_no}|{step}|{shape}"
         self.logger.debug(msg_fmt)
         
     def start_log(self, module, shape, elapsed=""):
